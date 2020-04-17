@@ -1,7 +1,5 @@
 package main
 
-import "note/use_time"
+func main() {
 
-func main()  {
-	use_time.UseTimeSleep()
 }
