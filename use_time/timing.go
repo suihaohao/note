@@ -44,7 +44,6 @@ func UseNewTicker1(d time.Duration) {
 		}()
 		logrus.Println("UseNewTicker1", time.Now().Format("2006-01-02 15:04:05"))
 	}
-	UseNewTicker1(d)
 }
 
 func UseNewTicker2(d time.Duration) {
