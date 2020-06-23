@@ -3,8 +3,6 @@ package str_conn
 import (
 	"bytes"
 	"fmt"
-	"reflect"
-	"strconv"
 	"strings"
 	"time"
 )
