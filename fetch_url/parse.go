@@ -17,13 +17,11 @@ func fetch(url string) (*goquery.Document, error) {
 	client.Timeout = clientTimeout
 	resp, err := client.Do(req)
 	if err != nil {
-		//logs.Info("http连接失败！")
 		err = fmt.Errorf("http连接失败！")
 		return nil, err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		//logs.Info("Http返回状态为" + strconv.Itoa(resp.StatusCode))
 		err = fmt.Errorf("Http返回状态为" + strconv.Itoa(resp.StatusCode))
 		return nil, err
 	}
@@ -39,75 +37,55 @@ func parseUrl(url string, useDepth, currDepth int, resultList *map[string]bool) 
 	currDepth += 1
 	//a链接
 	document.Find("a").Each(func(i int, selection *goquery.Selection) {
-		url, exists := selection.Attr("href")
-		hasPrefix := strings.HasPrefix(url, "https://") || strings.HasPrefix(url,"http://")
-		if exists && hasPrefix {
-			(*resultList)[url] = true
-		}
-		if exists && hasPrefix && useDepth > currDepth {
+		ok := addToMap(selection, resultList, i, "href")
+		if ok && useDepth > currDepth {
 			parseUrl(url, useDepth, currDepth, resultList)
 		}
 	})
 	//iframe链接
 	document.Find("iframe").Each(func(i int, selection *goquery.Selection) {
-		url, exists := selection.Attr("src")
-		hasPrefix := strings.HasPrefix(url, "https://") || strings.HasPrefix(url,"http://")
-		if exists && hasPrefix {
-			(*resultList)[url] = true
-		}
-		if exists && hasPrefix && useDepth > currDepth {
+		ok := addToMap(selection, resultList, i, "src")
+		if ok && useDepth > currDepth {
 			parseUrl(url, useDepth, currDepth, resultList)
 		}
 	})
 
 	//link
 	document.Find("link").Each(func(i int, selection *goquery.Selection) {
-		url, exists := selection.Attr("href")
-		hasPrefix := strings.HasPrefix(url, "https://") || strings.HasPrefix(url,"http://")
-		if exists && hasPrefix {
-			(*resultList)[url] = true
-		}
+		addToMap(selection, resultList, i, "href")
 	})
 
 	//脚本链接
 	document.Find("script").Each(func(i int, selection *goquery.Selection) {
-		url, exists := selection.Attr("src")
-		hasPrefix := strings.HasPrefix(url, "https://") || strings.HasPrefix(url,"http://")
-		if exists && hasPrefix {
-			(*resultList)[url] = true
-		}
+		addToMap(selection, resultList, i,"src")
 	})
 
 	//http[s]?://[a-zA-Z0-9\/.]
 
 	//audio标签
 	document.Find("audio ").Each(func(i int, selection *goquery.Selection) {
-		url, exists := selection.Attr("src")
-		hasPrefix := strings.HasPrefix(url, "https://") || strings.HasPrefix(url,"http://")
-		if exists && hasPrefix {
-			(*resultList)[url] = true
-		}
+		addToMap(selection, resultList, i, "src")
 	})
 
 	//image标签
 	document.Find("img").Each(func(i int, selection *goquery.Selection) {
-		url, exists := selection.Attr("src")
-		hasPrefix := strings.HasPrefix(url, "https://") || strings.HasPrefix(url,"http://")
-		if exists && hasPrefix {
-			(*resultList)[url] = true
-		}
+		addToMap(selection, resultList, i, "src")
 	})
 
 	//video标签
 	document.Find("video").Each(func(i int, selection *goquery.Selection) {
-		url, exists := selection.Attr("src")
-		hasPrefix := strings.HasPrefix(url, "https://") || strings.HasPrefix(url,"http://")
-		if exists && hasPrefix {
-			(*resultList)[url] = true
-		}
+		addToMap(selection, resultList, i, "src")
 	})
 }
-
+func addToMap(selection *goquery.Selection, result *map[string]bool, _ int, attr string) bool {
+	url, exists := selection.Attr(attr)
+	hasPrefix := strings.HasPrefix(url, "https://") || strings.HasPrefix(url, "http://")
+	if exists && hasPrefix {
+		(*result)[url] = true
+		return true
+	}
+	return false
+}
 func Start(url string, useDepth int) *map[string]bool{
 	t1 := time.Now()
 	resultList := make(map[string]bool)

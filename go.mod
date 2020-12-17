@@ -3,7 +3,7 @@ module note
 go 1.13
 
 require (
-	github.com/PuerkitoBio/goquery v1.6.0 // indirect
+	github.com/PuerkitoBio/goquery v1.6.0
 	github.com/chromedp/cdproto v0.0.0-20201204063249-be40c824ad18
 	github.com/chromedp/chromedp v0.5.4
 	github.com/neo4j/neo4j-go-driver v1.8.3
